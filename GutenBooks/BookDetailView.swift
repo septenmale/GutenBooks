@@ -24,7 +24,7 @@ struct BookDetailView: View {
                     Text(book.title)
                         .font(.title2.bold())
                         .multilineTextAlignment(.center)
-                    Text(book.authors.joined(separator: ", "))
+                    Text(book.authors.joined(separator: "; "))
                         .font(.title3.bold())
                         .foregroundStyle(.secondary)
                     

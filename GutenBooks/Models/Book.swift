@@ -26,7 +26,7 @@ extension Book {
         authors = response.authors.map(\.name)
         summary = response.summaries.first
         languages = response.languages
-        bookshelves = Array(response.bookshelves.keys)
+        bookshelves = response.bookshelves
         downloadCount = response.downloadCount
         coverURL = URL(string: response.formats["image/jpeg"] ?? "")
         isFavorite = false

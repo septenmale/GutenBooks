@@ -64,7 +64,7 @@ struct SingleBookView: View {
         if items.count <= limit {
             return items.joined(separator: ", ")
         } else {
-            let head = items.prefix(limit).joined(separator: ", ")
+            let head = items.prefix(limit).joined(separator: "; ")
             let more = items.count - limit
             return "\(head) and \(more) more"
         }
