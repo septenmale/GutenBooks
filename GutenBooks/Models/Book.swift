@@ -7,12 +7,13 @@
 
 import Foundation
 
-struct Book {
+struct Book: Identifiable {
     let id: Int
     let title: String
     let authors: [String]
     let summary: String?
     let languages: [String]
+    let bookshelves: [String]
     let downloadCount: Int
     let coverURL: URL?
     var isFavorite: Bool
@@ -25,6 +26,7 @@ extension Book {
         authors = response.authors.map(\.name)
         summary = response.summaries.first
         languages = response.languages
+        bookshelves = Array(response.bookshelves.keys)
         downloadCount = response.downloadCount
         coverURL = URL(string: response.formats["image/jpeg"] ?? "")
         isFavorite = false

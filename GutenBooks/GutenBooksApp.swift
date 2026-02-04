@@ -11,7 +11,7 @@ import SwiftUI
 struct GutenBooksApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootTabView()
         }
     }
 }

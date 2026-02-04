@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F5438B952F322CF100B19658 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = F5438B942F322CF100B19658 /* Kingfisher */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		F5A3CFF52F320AC100653EAB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5438B952F322CF100B19658 /* Kingfisher in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +117,7 @@
 			);
 			name = GutenBooks;
 			packageProductDependencies = (
+				F5438B942F322CF100B19658 /* Kingfisher */,
 			);
 			productName = GutenBooks;
 			productReference = F5A3CFE72F320ABF00653EAB /* GutenBooks.app */;
@@ -195,6 +201,9 @@
 			);
 			mainGroup = F5A3CFDE2F320ABF00653EAB;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F5438B932F322CF100B19658 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F5A3CFE82F320ABF00653EAB /* Products */;
 			projectDirPath = "";
@@ -578,6 +587,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F5438B932F322CF100B19658 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.6.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F5438B942F322CF100B19658 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F5438B932F322CF100B19658 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F5A3CFDF2F320ABF00653EAB /* Project object */;
 }

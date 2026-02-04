@@ -11,6 +11,7 @@ struct BookResponse: Decodable {
     let authors: [AuthorResponse]
     let summaries: [String]
     let languages: [String]
+    let bookshelves: [String: String]
     let downloadCount: Int
     let formats: [String: String]
 }
