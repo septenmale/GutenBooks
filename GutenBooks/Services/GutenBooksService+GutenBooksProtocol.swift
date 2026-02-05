@@ -1,5 +1,5 @@
 //
-//  GutenBooksService.swift
+//  GutenBooksServiceProtocol.swift
 //  GutenBooks
 //
 //  Created by Viktor Zavhorodnii on 04/02/2026.
@@ -7,11 +7,11 @@
 
 import Foundation
 
-protocol GutenBooksProtocol {
+protocol GutenBooksServiceProtocol {
     func fetchBooksPage(nextURL: URL?) async throws -> BooksPageResponse
 }
 
-final class GutenBooksService: GutenBooksProtocol {
+final class GutenBooksService: GutenBooksServiceProtocol {
     private let session: URLSession
     private let decoder: JSONDecoder
     

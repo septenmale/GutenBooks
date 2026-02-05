@@ -2,7 +2,7 @@ import SwiftUI
 import Kingfisher
 
 struct BookDetailView: View {
-    @Binding var book: Book
+    @Bindable var book: Book
     
     var body: some View {
         ScrollView {
@@ -155,6 +155,6 @@ private struct TagsSection: View {
 #Preview {
     @Previewable @State var book: Book = Book.sampleData[0]
     NavigationStack {
-        BookDetailView(book: $book)
+        BookDetailView(book: book)
     }
 }

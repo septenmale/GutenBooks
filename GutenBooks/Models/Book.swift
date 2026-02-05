@@ -7,7 +7,8 @@
 
 import Foundation
 
-struct Book: Identifiable {
+@Observable
+final class Book: Identifiable {
     let id: Int
     let title: String
     let authors: [String]
@@ -17,9 +18,20 @@ struct Book: Identifiable {
     let downloadCount: Int
     let coverURL: URL?
     var isFavorite: Bool
-}
-
-extension Book {
+    
+    init(id: Int, title: String, authors: [String], summary: String?, languages: [String],
+         bookshelves: [String], downloadCount: Int, coverURL: URL?, isFavorite: Bool) {
+        self.id = id
+        self.title = title
+        self.authors = authors
+        self.summary = summary
+        self.languages = languages
+        self.bookshelves = bookshelves
+        self.downloadCount = downloadCount
+        self.coverURL = coverURL
+        self.isFavorite = isFavorite
+    }
+    
     init(from response: BookResponse) {
         id = response.id
         title = response.title

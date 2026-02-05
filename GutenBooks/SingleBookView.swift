@@ -9,7 +9,7 @@ import SwiftUI
 import Kingfisher
 
 struct SingleBookView: View {
-    @Binding var book: Book
+    @Bindable var book: Book
     
     let isShownFromFavorites: Bool
     
@@ -62,7 +62,7 @@ struct SingleBookView: View {
         guard !items.isEmpty else { return "—" }
         let limit = 2
         if items.count <= limit {
-            return items.joined(separator: ", ")
+            return items.joined(separator: "; ")
         } else {
             let head = items.prefix(limit).joined(separator: "; ")
             let more = items.count - limit
@@ -73,10 +73,10 @@ struct SingleBookView: View {
 
 #Preview("Regular", traits: .sizeThatFitsLayout) {
     @Previewable @State var book: Book = Book.sampleData[0]
-    SingleBookView(book: $book, isShownFromFavorites: false)
+    SingleBookView(book: book, isShownFromFavorites: false)
 }
 
 #Preview("Favorites", traits: .sizeThatFitsLayout) {
     @Previewable @State var favBook: Book = Book.sampleData[0]
-    SingleBookView(book: $favBook, isShownFromFavorites: true)
+    SingleBookView(book: favBook, isShownFromFavorites: true)
 }

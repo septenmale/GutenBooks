@@ -7,10 +7,9 @@
 
 import Foundation
 
-@MainActor
 @Observable
 final class BooksStore {
-    private let service: GutenBooksProtocol
+    private let service: GutenBooksServiceProtocol
     
     var books: [Book] = []
     
@@ -23,7 +22,7 @@ final class BooksStore {
     private var nextURL: URL? = nil
     private var hasLoadedInitial: Bool = false
     
-    init(service: GutenBooksProtocol) {
+    init(service: GutenBooksServiceProtocol) {
         self.service = service
     }
     
