@@ -8,29 +8,185 @@
 import XCTest
 @testable import GutenBooks
 
+@MainActor
 final class GutenBooksTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    
+    func testLoadInitialIfNeededSuccess() async {
+        // Given
+        let page = BooksPageResponse(
+            count: 2,
+            next: "https://gutendex.com/books?page=2",
+            results: [
+                makeBookResponse(id: 1, title: "Book 1"),
+                makeBookResponse(id: 2, title: "Book 2")
+            ]
+        )
+        
+        let service = GutenBooksServiceSpy(stubs: [.success(page)])
+        let store = BooksStore(service: service)
+        
+        // When
+        await store.loadInitialIfNeeded()
+        
+        // Then
+        XCTAssertEqual(service.fetchCalls.count, 1)
+        XCTAssertFalse(store.isLoading)
+        XCTAssertNil(store.errorMessage)
+        XCTAssertEqual(store.books.count, 2)
+        XCTAssertEqual(store.books[0].id, 1)
+        XCTAssertEqual(store.books[1].id, 2)
     }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    
+    
+    func testLoadInitialIfNeededFailure() async {
+        // Given
+        let service = GutenBooksServiceSpy(stubs: [.failure(StubError())])
+        let store = BooksStore(service: service)
+        
+        // When
+        await store.loadInitialIfNeeded()
+        
+        // Then
+        XCTAssertEqual(service.fetchCalls.count, 1)
+        XCTAssertFalse(store.isLoading)
+        XCTAssertTrue(store.books.isEmpty)
+        XCTAssertNotNil(store.errorMessage)
     }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+    
+    func testLoadInitialIfNeededCalledTwice() async {
+        // Given
+        let page = BooksPageResponse(
+            count: 1,
+            next: nil,
+            results: [
+                makeBookResponse(id: 1, title: "Book 1")
+            ]
+        )
+        
+        let service = GutenBooksServiceSpy(stubs: [.success(page)])
+        let store = BooksStore(service: service)
+        
+        // When
+        await store.loadInitialIfNeeded()
+        await store.loadInitialIfNeeded()
+        
+        // Then
+        XCTAssertEqual(service.fetchCalls.count, 1)
+        XCTAssertEqual(store.books.count, 1)
+        XCTAssertEqual(store.books[0].id, 1)
     }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+    
+    func testReloadAfterFailureRetriesAndLoadsBooks() async {
+        // Given
+        let page = BooksPageResponse(
+            count: 1,
+            next: nil,
+            results: [makeBookResponse(id: 10, title: "Recovered")]
+        )
+        
+        let service = GutenBooksServiceSpy(stubs: [
+            .failure(StubError()),
+            .success(page)
+        ])
+        
+        let store = BooksStore(service: service)
+        
+        // When
+        await store.loadInitialIfNeeded()
+        
+        // Then
+        XCTAssertEqual(service.fetchCalls.count, 1)
+        XCTAssertNotNil(store.errorMessage)
+        XCTAssertTrue(store.books.isEmpty)
+        
+        // When
+        await store.reload()
+        
+        // Then
+        XCTAssertEqual(service.fetchCalls.count, 2)
+        XCTAssertNil(store.errorMessage)
+        XCTAssertEqual(store.books.count, 1)
+        XCTAssertEqual(store.books[0].id, 10)
+    }
+    
+    func testReloadDoesNotStartIfLoadingIsInProgress() async {
+        // Given
+        let page = BooksPageResponse(
+            count: 1,
+            next: nil,
+            results: [makeBookResponse(id: 1, title: "Book 1")]
+        )
+        
+        let service = GutenBooksServiceSpy(stubs: [
+            .delayedSuccess(page, delay: 300_000_000) // 0.3 сек
+        ])
+        
+        let store = BooksStore(service: service)
+        
+        // When
+        let loadTask = Task {
+            await store.loadInitialIfNeeded()
+        }
+        
+        try? await Task.sleep(nanoseconds: 50_000_000)
+        
+        await store.reload()
+        
+        _ = await loadTask.value
+        
+        // Then
+        XCTAssertEqual(service.fetchCalls.count, 1)
+        XCTAssertEqual(store.books.count, 1)
+    }
+    
+    private func makeBookResponse(id: Int, title: String) -> BookResponse {
+        BookResponse(
+            id: id,
+            title: title,
+            authors: [AuthorResponse(name: "Author \(id)")],
+            summaries: ["Summary \(id)"],
+            languages: ["en"],
+            bookshelves: [],
+            downloadCount: 100 + id,
+            formats: ["image/jpeg": "https://example.com/\(id).jpg"]
+        )
+    }
+    
+    private final class GutenBooksServiceSpy: GutenBooksServiceProtocol {
+        enum Stub {
+            case success(BooksPageResponse)
+            case failure(Error)
+            case delayedSuccess(BooksPageResponse, delay: UInt64)
+        }
+        
+        private(set) var fetchCalls: [URL?] = []
+        private var stubs: [Stub]
+        
+        init(stubs: [Stub]) {
+            self.stubs = stubs
+        }
+        
+        func fetchBooksPage(nextURL: URL?) async throws -> BooksPageResponse {
+            fetchCalls.append(nextURL)
+            
+            guard !stubs.isEmpty else {
+                throw StubError()
+            }
+            
+            let stub = stubs.removeFirst()
+            switch stub {
+            case .success(let page):
+                return page
+            case .failure(let error):
+                throw error
+            case .delayedSuccess(let page, let delay):
+                try await Task.sleep(nanoseconds: delay)
+                return page
+            }
         }
     }
-
+    
+    private struct StubError: LocalizedError {
+        var errorDescription: String? { "Stub error" }
+    }
 }
