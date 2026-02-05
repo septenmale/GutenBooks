@@ -20,12 +20,35 @@ struct FavoritesBooksView: View {
                         subtitle: "Tap the heart on any book to add it to your collection and see it here."
                     )
                 } else {
-                    List(store.favoritesBooks) { book in
-                        NavigationLink {
-                            BookDetailView(book: book)
-                        } label: {
-                            SingleBookView(book: book, isShownFromFavorites: true)
+                    
+                    List {
+                        Section {
+                            ForEach(store.favoritesBooks) { book in
+                                NavigationLink {
+                                    BookDetailView(book: book)
+                                } label: {
+                                    SingleBookView(book: book, isShownFromFavorites: true)
+                                }
+                                .swipeActions(edge: .trailing) {
+                                    Button {
+                                        store.toggleIsRead(book)
+                                    } label: {
+                                        book.isRead
+                                        ? Label("Mark Unread", systemImage: "arrow.uturn.backward.circle")
+                                        : Label("Mark Read", systemImage: "checkmark.circle.fill")
+                                    }
+                                    .tint(book.isRead ? .orange : .green)
+                                }
+                            }
+                            
+                        } footer: {
+                            let total = store.favoritesBooks.count
+                            let read = store.favoritesBooks.filter { $0.isRead }.count
+                            Text("Total count: \(total), completed: \(read)")
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .padding(.bottom)
                         }
+                        
                     }
                     .accessibilityIdentifier("favoritesList")
                 }

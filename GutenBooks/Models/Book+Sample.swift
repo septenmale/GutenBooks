@@ -18,7 +18,8 @@ extension Book {
             bookshelves: ["British literature", "Novels", "Romance", "Harvard classic"],
             downloadCount: 123456,
             coverURL: URL(string: "https://www.gutenberg.org/cache/epub/1342/pg1342.cover.medium.jpg"),
-            isFavorite: false
+            isFavorite: false,
+            isRead: false
         ),
         Book(
             id: 2,
@@ -29,7 +30,9 @@ extension Book {
             bookshelves: ["Novel", "Ever listings", "Parade"],
             downloadCount: 45565,
             coverURL: URL(string: "https://www.gutenberg.org/cache/epub/2701/pg2701.cover.medium.jpg"),
-            isFavorite: true        ),
+            isFavorite: true,
+            isRead: false
+        ),
         Book(
             id: 3,
             title: "Moby-Dick",
@@ -39,7 +42,8 @@ extension Book {
             bookshelves: ["Plays/Films/Dramas", "British literature"],
             downloadCount: 98765,
             coverURL: nil,
-            isFavorite: true
+            isFavorite: true,
+            isRead: true
         )
     ]
 }

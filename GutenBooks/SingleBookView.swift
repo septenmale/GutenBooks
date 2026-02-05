@@ -9,10 +9,11 @@ import SwiftUI
 import Kingfisher
 
 struct SingleBookView: View {
-    @Environment(BooksStore.self) private var store
     let book: Book
-    
     let isShownFromFavorites: Bool
+    
+    @Environment(BooksStore.self) private var store
+    @State private var showRemoveFavoriteConfirm: Bool = false
     
     var body: some View {
         HStack {
@@ -36,40 +37,39 @@ struct SingleBookView: View {
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                 
-                Text(formatList(book.authors))
+                Text(book.authors.joined(separator: ", "))
                     .font(.default)
                     .foregroundStyle(.secondary)
                 if isShownFromFavorites {
-                    HStack(spacing: 8) {
-                        Text(formatList(book.languages))
-                        Text("•")
-                        Text("\(book.downloadCount.formatted(.number)) downloads")
-                    }
-                    .font(.subheadline)
-                    .foregroundStyle(.tertiary)
+                    Text(book.isRead ? "Completed" : "Reading")
+                        .font(.default)
+                        .foregroundStyle(.tertiary)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             Button {
-                store.toggleFavorite(book)
+                if isShownFromFavorites && book.isFavorite {
+                    showRemoveFavoriteConfirm = true
+                } else {
+                    store.toggleFavorite(book)
+                }
             } label: {
                 Image(systemName: book.isFavorite ? "heart.fill" : "heart")
                     .foregroundStyle(book.isFavorite ? Color.accentColor : .secondary)
             }
             .imageScale(.large)
             .buttonStyle(.plain)
-        }
-    }
-    
-    private func formatList(_ items: [String]) -> String{
-        guard !items.isEmpty else { return "—" }
-        let limit = 2
-        if items.count <= limit {
-            return items.joined(separator: "; ")
-        } else {
-            let head = items.prefix(limit).joined(separator: "; ")
-            let more = items.count - limit
-            return "\(head) and \(more) more"
+            .confirmationDialog(
+                "Are you sure",
+                isPresented: $showRemoveFavoriteConfirm,
+                titleVisibility: .hidden
+            ) {
+                Button("Remove from favorites", role: .destructive) {
+                    store.toggleFavorite(book)
+                }
+            } message: {
+                Text("Book will be removed from favorites.")
+            }
         }
     }
 }

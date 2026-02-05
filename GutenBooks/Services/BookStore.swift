@@ -33,6 +33,10 @@ final class BooksStore {
         book.isFavorite.toggle()
     }
     
+    func toggleIsRead(_ book: Book) {
+        book.isRead.toggle()
+    }
+    
     func loadInitialIfNeeded() async {
         guard !hasLoadedInitial else { return }
         hasLoadedInitial = true

@@ -18,9 +18,10 @@ final class Book: Identifiable {
     let downloadCount: Int
     let coverURL: URL?
     var isFavorite: Bool
+    var isRead: Bool
     
     init(id: Int, title: String, authors: [String], summary: String?, languages: [String],
-         bookshelves: [String], downloadCount: Int, coverURL: URL?, isFavorite: Bool) {
+         bookshelves: [String], downloadCount: Int, coverURL: URL?, isFavorite: Bool, isRead: Bool) {
         self.id = id
         self.title = title
         self.authors = authors
@@ -30,6 +31,7 @@ final class Book: Identifiable {
         self.downloadCount = downloadCount
         self.coverURL = coverURL
         self.isFavorite = isFavorite
+        self.isRead = isRead
     }
     
     init(from response: BookResponse) {
@@ -42,5 +44,6 @@ final class Book: Identifiable {
         downloadCount = response.downloadCount
         coverURL = URL(string: response.formats["image/jpeg"] ?? "")
         isFavorite = false
+        isRead = false
     }
 }
