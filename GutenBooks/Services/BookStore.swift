@@ -19,9 +19,18 @@ final class BooksStore {
     private var hasLoadedInitial: Bool = false
     private var isLoadingNext: Bool = false
     
+    var favoritesBooks: [Book] {
+        books.filter { $0.isFavorite }
+    }
+    
+    
     init(service: GutenBooksServiceProtocol, initialBooks: [Book] = []) {
         self.service = service
         self.books = initialBooks
+    }
+    
+    func toggleFavorite(_ book: Book) {
+        book.isFavorite.toggle()
     }
     
     func loadInitialIfNeeded() async {

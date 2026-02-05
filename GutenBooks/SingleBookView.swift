@@ -9,7 +9,8 @@ import SwiftUI
 import Kingfisher
 
 struct SingleBookView: View {
-    @Bindable var book: Book
+    @Environment(BooksStore.self) private var store
+    let book: Book
     
     let isShownFromFavorites: Bool
     
@@ -49,7 +50,9 @@ struct SingleBookView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            Button(action: { book.isFavorite.toggle() }) {
+            Button {
+                store.toggleFavorite(book)
+            } label: {
                 Image(systemName: book.isFavorite ? "heart.fill" : "heart")
                     .foregroundStyle(book.isFavorite ? Color.accentColor : .secondary)
             }
@@ -72,11 +75,15 @@ struct SingleBookView: View {
 }
 
 #Preview("Regular", traits: .sizeThatFitsLayout) {
-    @Previewable @State var book: Book = Book.sampleData[0]
+    let book = Book.sampleData[0]
+    let previewStore = BooksStore(service: GutenBooksService(), initialBooks: [book])
     SingleBookView(book: book, isShownFromFavorites: false)
+        .environment(previewStore)
 }
 
 #Preview("Favorites", traits: .sizeThatFitsLayout) {
-    @Previewable @State var favBook: Book = Book.sampleData[0]
-    SingleBookView(book: favBook, isShownFromFavorites: true)
+    let book = Book.sampleData[0]
+    let previewStore = BooksStore(service: GutenBooksService(), initialBooks: [book])
+    SingleBookView(book: book, isShownFromFavorites: true)
+        .environment(previewStore)
 }

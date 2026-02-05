@@ -2,7 +2,8 @@ import SwiftUI
 import Kingfisher
 
 struct BookDetailView: View {
-    @Bindable var book: Book
+    @Environment(BooksStore.self) private var store
+    let book: Book
     
     var body: some View {
         ScrollView {
@@ -29,7 +30,8 @@ struct BookDetailView: View {
                         .foregroundStyle(.secondary)
                     
                 }
-                FavoriteButton(isFavorite: $book.isFavorite)
+                FavoriteButton(isFavorite: book.isFavorite,
+                               action: { store.toggleFavorite(book) })
                 HStack(spacing: 16) {
                     StatCard(icon: "arrow.down.circle", title: "DOWNLOADS", values: [book.downloadCount.formatted(.number)])
                     StatCard(icon: "globe", title: "LANGUAGE", values: book.languages)
@@ -56,7 +58,8 @@ struct BookDetailView: View {
 }
 
 private struct FavoriteButton: View {
-    @Binding var isFavorite: Bool
+    let isFavorite: Bool
+    let action: () -> Void
     
     private var foregroundColor: Color { isFavorite ? .primary : .white }
     private var backgroundColor: Color { isFavorite ? Color(.tertiarySystemFill) : .accentColor }
@@ -64,7 +67,7 @@ private struct FavoriteButton: View {
     private var icon: String { isFavorite ? "heart.fill" : "heart" }
     
     var body: some View {
-        Button(action: { isFavorite.toggle() }) {
+        Button(action: action) {
             HStack {
                 Image(systemName: icon)
                 Text(title)
@@ -154,8 +157,10 @@ private struct TagsSection: View {
 }
 
 #Preview {
-    @Previewable @State var book: Book = Book.sampleData[0]
+    let book = Book.sampleData[0]
+    let previewStore = BooksStore(service: GutenBooksService(), initialBooks: [book])
     NavigationStack {
         BookDetailView(book: book)
     }
+    .environment(previewStore)
 }

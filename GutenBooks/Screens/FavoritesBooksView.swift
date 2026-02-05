@@ -8,19 +8,19 @@
 import SwiftUI
 
 struct FavoritesBooksView: View {
-    let viewModel: FavoritesBooksViewModel
+    @Environment(BooksStore.self) private var store
     
     var body: some View {
         NavigationStack {
             Group {
-                if viewModel.favoriteBooks.isEmpty {
+                if store.favoritesBooks.isEmpty {
                     EmptyStateView(
                         icon: "heart",
                         title: "No favorites yet",
                         subtitle: "Tap the heart on any book to add it to your collection and see it here."
                     )
                 } else {
-                    List(viewModel.favoriteBooks) { book in
+                    List(store.favoritesBooks) { book in
                         NavigationLink {
                             BookDetailView(book: book)
                         } label: {
@@ -36,9 +36,8 @@ struct FavoritesBooksView: View {
 }
 
 #Preview {
-    let service = GutenBooksService()
-    let store = BooksStore(service: service, initialBooks: Book.sampleData)
-    let vm = FavoritesBooksViewModel(store: store)
-    
-    FavoritesBooksView(viewModel: vm)
+    let books = Book.sampleData
+    let previewStore = BooksStore(service: GutenBooksService(), initialBooks: books)
+    FavoritesBooksView()
+        .environment(previewStore)
 }
