@@ -26,9 +26,11 @@ struct RootTabView: View {
         TabView {
             Tab("Books", systemImage: "books.vertical") {
                 BooksView(viewModel: booksVM)
+                    .accessibilityIdentifier("booksTabRoot")
             }
             Tab("Favorites", systemImage: "heart") {
                 FavoritesBooksView(viewModel: favoritesVM)
+                    .accessibilityIdentifier("favoritesTabRoot")
             }
             
         }

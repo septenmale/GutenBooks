@@ -78,6 +78,7 @@ private struct FavoriteButton: View {
                     .fill(backgroundColor)
             )
         }
+        .accessibilityIdentifier("bookDetailFavoriteButton")
         .buttonStyle(.plain)
     }
 }

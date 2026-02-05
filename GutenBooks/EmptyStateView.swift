@@ -53,6 +53,8 @@ struct EmptyStateView: View {
             }
             .padding()
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityIdentifier("emptyState")
     }
 }
 

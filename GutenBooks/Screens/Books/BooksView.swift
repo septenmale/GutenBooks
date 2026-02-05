@@ -37,6 +37,7 @@ struct BooksView: View {
                             await viewModel.loadNextIfNeeded(currentBook: book)
                         }
                     }
+                    .accessibilityIdentifier("booksList")
                 }
             }
             .navigationTitle("Books")

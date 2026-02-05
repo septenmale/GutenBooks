@@ -27,6 +27,7 @@ struct FavoritesBooksView: View {
                             SingleBookView(book: book, isShownFromFavorites: true)
                         }
                     }
+                    .accessibilityIdentifier("favoritesList")
                 }
             }
             .navigationTitle("Favorites")

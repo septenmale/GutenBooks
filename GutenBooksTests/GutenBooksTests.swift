@@ -118,7 +118,7 @@ final class GutenBooksTests: XCTestCase {
         )
         
         let service = GutenBooksServiceSpy(stubs: [
-            .delayedSuccess(page, delay: 300_000_000) // 0.3 сек
+            .delayedSuccess(page, delay: 300_000_000)
         ])
         
         let store = BooksStore(service: service)
