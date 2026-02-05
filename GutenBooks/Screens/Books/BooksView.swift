@@ -10,18 +10,33 @@ import SwiftUI
 struct BooksView: View {
     let viewModel: BooksViewModel
     
-    //TODO: Add loader while loading in progress 
     var body: some View {
         NavigationStack {
-            List(viewModel.allBooks) { book in
-                NavigationLink {
-                    BookDetailView(book: book)
-                } label: {
-                    SingleBookView(book: book, isShownFromFavorites: false)
-                }
-                // task или onAppear
-                .task {
-                    await viewModel.loadNextIfNeeded(currentBook: book)
+            Group {
+                if viewModel.shouldShowProgress {
+                    ProgressView()
+                        .controlSize(.large)
+                } else if viewModel.shouldShowInitialError {
+                    EmptyStateView(
+                        icon: "wifi.exclamationmark",
+                        title: "Couldn't load books",
+                        subtitle: "Please try again later.",
+                        buttonTitle: "Retry",
+                        buttonAction: {
+                            Task { await viewModel.reload() }
+                        }
+                    )
+                } else {
+                    List(viewModel.allBooks) { book in
+                        NavigationLink {
+                            BookDetailView(book: book)
+                        } label: {
+                            SingleBookView(book: book, isShownFromFavorites: false)
+                        }
+                        .task {
+                            await viewModel.loadNextIfNeeded(currentBook: book)
+                        }
+                    }
                 }
             }
             .navigationTitle("Books")
@@ -31,9 +46,8 @@ struct BooksView: View {
 
 #Preview {
     let service = GutenBooksService()
-    let store = BooksStore(service: service)
-    store.books = Book.sampleData
+    let store = BooksStore(service: service, initialBooks: Book.sampleData)
     let vm = BooksViewModel(store: store)
     
-   return BooksView(viewModel: vm)
+    BooksView(viewModel: vm)
 }

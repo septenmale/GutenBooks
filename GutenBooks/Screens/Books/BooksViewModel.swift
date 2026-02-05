@@ -7,24 +7,31 @@
 
 final class BooksViewModel {
     private let store: BooksStore
-
+    
     init(store: BooksStore) {
         self.store = store
     }
-
+    
     var allBooks: [Book] {
         store.books
     }
-
-    // considering
+    
     var isLoading: Bool { store.isLoading }
-    var errorMessage: String? { store.errorMessage }
-
-    // considering
+    
+    var hasError: Bool { store.errorMessage != nil }
+    
+    var shouldShowProgress: Bool {
+        isLoading && allBooks.isEmpty
+    }
+    
+    var shouldShowInitialError: Bool {
+        hasError && allBooks.isEmpty
+    }
+    
     func reload() async {
         await store.reload()
     }
-
+    
     func loadNextIfNeeded(currentBook: Book) async {
         await store.loadNextIfNeeded(currentBook: currentBook)
     }

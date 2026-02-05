@@ -36,9 +36,8 @@ struct FavoritesBooksView: View {
 
 #Preview {
     let service = GutenBooksService()
-    let store = BooksStore(service: service)
-    store.books = Book.sampleData
+    let store = BooksStore(service: service, initialBooks: Book.sampleData)
     let vm = FavoritesBooksViewModel(store: store)
     
-    return FavoritesBooksView(viewModel: vm)
+    FavoritesBooksView(viewModel: vm)
 }

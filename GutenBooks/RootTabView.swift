@@ -28,7 +28,6 @@ struct RootTabView: View {
                 BooksView(viewModel: booksVM)
             }
             Tab("Favorites", systemImage: "heart") {
-                // Вот тут
                 FavoritesBooksView(viewModel: favoritesVM)
             }
             

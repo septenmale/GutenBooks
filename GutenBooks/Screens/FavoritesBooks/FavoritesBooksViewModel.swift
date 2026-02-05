@@ -8,7 +8,6 @@
 import Observation
 
 final class FavoritesBooksViewModel {
-    // protocol?
     private let store: BooksStore
     
     init(store: BooksStore) {

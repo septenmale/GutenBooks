@@ -11,19 +11,17 @@ import Foundation
 final class BooksStore {
     private let service: GutenBooksServiceProtocol
     
-    var books: [Book] = []
+    private(set) var books: [Book] = []
+    private(set) var isLoading: Bool = false
+    private(set) var errorMessage: String? = nil
     
-    // For UI handling – delete if no use
-    var isLoading: Bool = false
-    var isLoadingNext: Bool = false
-    var errorMessage: String? = nil
-    
-    // Pagination
     private var nextURL: URL? = nil
     private var hasLoadedInitial: Bool = false
+    private var isLoadingNext: Bool = false
     
-    init(service: GutenBooksServiceProtocol) {
+    init(service: GutenBooksServiceProtocol, initialBooks: [Book] = []) {
         self.service = service
+        self.books = initialBooks
     }
     
     func loadInitialIfNeeded() async {
@@ -32,9 +30,8 @@ final class BooksStore {
         await loadInitial()
     }
     
-    // Will be suitable for reload button
     func reload() async {
-        hasLoadedInitial = true
+        guard !isLoading else { return }
         await loadInitial()
     }
     
