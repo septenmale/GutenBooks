@@ -6,10 +6,13 @@
 //
 
 import Foundation
+import os
 
+@MainActor
 @Observable
 final class BooksStore {
     private let service: GutenBooksServiceProtocol
+    private let logger = Logger(subsystem: "GutenBooks", category: "BooksStore")
     
     private(set) var books: [Book] = []
     private(set) var isLoading: Bool = false
@@ -85,6 +88,7 @@ final class BooksStore {
             
             self.nextURL = page.nextURL
         } catch {
+            logger.error("Failed to load next page: \(error, privacy: .private)")
         }
     }
 }

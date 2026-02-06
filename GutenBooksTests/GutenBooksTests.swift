@@ -139,6 +139,45 @@ final class GutenBooksTests: XCTestCase {
         XCTAssertEqual(store.books.count, 1)
     }
     
+    func testLoadNextIfNeededAppendsNextPageWhenNearEnd() async {
+        // Given
+        let initialPage = BooksPageResponse(
+            count: 15,
+            next: "https://gutendex.com/books?page=2",
+            results: (1...15).map { id in
+                makeBookResponse(id: id, title: "Book \(id)")
+            }
+        )
+        
+        let nextPage = BooksPageResponse(
+            count: 17,
+            next: nil,
+            results: [
+                makeBookResponse(id: 16, title: "Book 16"),
+                makeBookResponse(id: 17, title: "Book 17")
+            ]
+        )
+        
+        let service = GutenBooksServiceSpy(stubs: [
+            .success(initialPage),
+            .success(nextPage)
+        ])
+        let store = BooksStore(service: service)
+        
+        // When
+        await store.loadInitialIfNeeded()
+        
+        let currentBook = store.books.last!
+        await store.loadNextIfNeeded(currentBook: currentBook)
+        
+        // Then
+        XCTAssertEqual(service.fetchCalls.count, 2)
+        XCTAssertNil(store.errorMessage)
+        XCTAssertEqual(store.books.count, 17)
+        XCTAssertEqual(store.books[15].id, 16)
+        XCTAssertEqual(store.books[16].id, 17)
+    }
+    
     private func makeBookResponse(id: Int, title: String) -> BookResponse {
         BookResponse(
             id: id,
@@ -190,3 +229,4 @@ final class GutenBooksTests: XCTestCase {
         var errorDescription: String? { "Stub error" }
     }
 }
+

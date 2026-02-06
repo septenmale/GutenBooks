@@ -9,12 +9,15 @@ import SwiftUI
 
 struct RootTabView: View {
     private let store: BooksStore
+    private let favoritesViewModel: FavoritesBooksViewModel
     
     init() {
         let service = GutenBooksService()
         let store = BooksStore(service: service)
+        let favoritesViewModel = FavoritesBooksViewModel(store: store)
         
         self.store = store
+        self.favoritesViewModel = favoritesViewModel
     }
     
     var body: some View {
@@ -24,7 +27,7 @@ struct RootTabView: View {
                     .accessibilityIdentifier("booksTabRoot")
             }
             Tab("Favorites", systemImage: "heart") {
-                FavoritesBooksView()
+                FavoritesBooksView(viewModel: favoritesViewModel)
                     .accessibilityIdentifier("favoritesTabRoot")
             }
             

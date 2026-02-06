@@ -12,6 +12,7 @@ protocol GutenBooksServiceProtocol {
 }
 
 final class GutenBooksService: GutenBooksServiceProtocol {
+    private let baseEndpoint = URL(string: "https://gutendex.com/books")
     private let session: URLSession
     private let decoder: JSONDecoder
     
@@ -24,7 +25,7 @@ final class GutenBooksService: GutenBooksServiceProtocol {
     }
     
     func fetchBooksPage(nextURL: URL?) async throws -> BooksPageResponse {
-        let url = nextURL ?? URL(string: "https://gutendex.com/books")
+        let url = nextURL ?? baseEndpoint
         guard let url else { throw NetworkError.invalidURL }
         
         let (data, response) = try await session.data(from: url)
